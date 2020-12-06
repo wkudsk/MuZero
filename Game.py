@@ -32,6 +32,7 @@ class Game:
                       ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
                       ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']]
         self.pieces = self.initializeBoard()
+        self.gui_piece = []
         self.gui_board = []
         self.game_over = False
         self.ai_turn_limit = time
@@ -42,6 +43,7 @@ class Game:
         self.player_string.pack()
         self.c = tk.Canvas(root, width=800, height=800)
         self.c.pack()
+        self.piece = None
 
         white = True
         for row in range(0, 800, 100):
@@ -62,10 +64,12 @@ class Game:
             # column = []
             for col in range(0, 800, 100):
                 if(not self.board[int(row/100)][int(col/100)] == '  '):
-                    piece = tk.PhotoImage(
+                    self.piece = tk.PhotoImage(
                         file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
+                    self.gui_piece.append(self.piece)
+                    self.c.image_names = self.piece
                     self.c.create_image(
-                        row, col+5, image=piece, state=tk.NORMAL, anchor=tk.NW, )
+                        col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, )
 
         root.mainloop()
 

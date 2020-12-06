@@ -4,12 +4,13 @@ import tkinter as tk
 import argparse
 import multiprocessing as mp
 import tkinter as tk
+import tkinter.font as tkFont
 
 # 3rd party libs
 import numpy as np
 
 # Local libs
-#from Player import AIPlayer, RandomPlayer, HumanPlayer
+from Player import AIPlayer, RandomPlayer, HumanPlayer
 from ChessPieces import King, Queen, Pawn, Knight, Bishop, Rook
 
 
@@ -27,6 +28,40 @@ class Game:
         self.gui_board = []
         self.game_over = False
         self.ai_turn_limit = time
+
+        root = tk.Tk()
+        root.title('Chess')
+        self.player_string = tk.Label(root, text=player1.player_string)
+        self.player_string.pack()
+        self.c = tk.Canvas(root, width=800, height=800)
+        self.c.pack()
+
+        white = True
+        for row in range(0, 800, 100):
+            column = []
+            for col in range(0, 800, 100):
+                color = ''
+                if(white):
+                    color = 'white'
+                else:
+                    color = 'black'
+                column.append(self.c.create_rectangle(
+                    row, col, row+100, col+100, fill=color))
+                white = not white
+            self.gui_board.append(column)
+            white = not white
+
+        text = tk.Text(root, tabs=(200,))
+        text.pack(side="left", fill="both", expand=True)
+
+        pieces = u"\u2654\u2655\u2656\u2657\u2658\u2659\u265A\u265B\u265C\u265D\u265E\u265F\n"
+        font = tkFont.Font(family="Arial Unicode MS", size=64)
+        tag = "font-%s" % 0
+        text.tag_configure((tag,), font=font)
+        text.insert("end", "\t" + pieces, tag)
+        self.gui_board.insert(self.c.create_text(400, text))
+
+        root.mainloop()
 
     def make_move(self):
         pass
@@ -88,16 +123,15 @@ def main(player1, player2, time):
     player1 - a string ['ai', 'random', 'human']
     player2 - a string ['ai', 'random', 'human']
     """
-    # def make_player(name, num):
-    #     if name == 'ai':
-    #         return AIPlayer(num)
-    #     elif name == 'random':
-    #         return RandomPlayer(num)
-    #     elif name == 'human':
-    #         return HumanPlayer(num)
+    def make_player(name, num):
+        if name == 'ai':
+            return AIPlayer(num)
+        elif name == 'random':
+            return RandomPlayer(num)
+        elif name == 'human':
+            return HumanPlayer(num)
 
-    # Game(make_player(player1, 1), make_player(player2, 2), time)
-    pass
+    Game(make_player(player1, 1), make_player(player2, 2), time)
 
 
 def play_game(player1, player2):

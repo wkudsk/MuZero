@@ -31,9 +31,18 @@ class Game:
                       ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '],
                       ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
                       ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']]
-        self.pieces = self.initializeBoard()
+        self.pieces = [[Rook("black", 0, 0), Knight("black", 0, 1), Bishop("black", 0, 2), Queen("black", 0, 3), King("black", 0, 4), Bishop("black", 0, 5), Knight("black", 0, 6), Rook("black", 0, 7)],
+                       [Pawn("black", 1, 0), Pawn("black", 1, 1), Pawn("black", 1, 2), Pawn("black", 1, 3), Pawn(
+                           "black", 1, 4), Pawn("black", 1, 5), Pawn("black", 1, 6), Pawn("black", 1, 7)],
+                       [None, None, None, None, None, None, None, None],
+                       [None, None, None, None, None, None, None, None],
+                       [None, None, None, None, None, None, None, None],
+                       [None, None, None, None, None, None, None, None],
+                       [Pawn("white", 6, 0), Pawn("white", 6, 1), Pawn("white", 6, 2), Pawn("white", 6, 3), Pawn(
+                           "white", 6, 4), Pawn("white", 6, 5), Pawn("white", 6, 6), Pawn("white", 6, 7)]
+                       [Rook("white", 7, 0), Knight("white", 7, 1), Bishop("white", 7, 2), Queen("white", 7, 3), King("white", 7, 4), Bishop("white", 7, 5), Knight("white", 7, 6), Rook("white", 7, 7)]]
         self.gui_piece = []
-        self.gui_board = []
+        self.gui_board = [[]]
         self.game_over = False
         self.ai_turn_limit = time
 
@@ -66,10 +75,12 @@ class Game:
                 if(not self.board[int(row/100)][int(col/100)] == '  '):
                     self.piece = tk.PhotoImage(
                         file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
-                    self.gui_piece.append(self.piece)
+                    self.gui_piece[int(row/100)][int(col/100)] = (self.piece)
                     self.c.image_names = self.piece
                     self.c.create_image(
                         col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, )
+                else:
+                    self.gui_piece[int(row/100)][int(col/100)] = None
 
         root.mainloop()
 
@@ -81,47 +92,6 @@ class Game:
 
     def game_completed(self, player_num):
         pass
-
-    def initializeBoard(self):
-        pieces = []
-        for i in range(8):
-            pawnWhite = Pawn("white", 1, i)
-            pawnBlack = Pawn("black", 6, i)
-            pieces.append(pawnWhite)
-            pieces.append(pawnBlack)
-        king = King("white", 0, 4)
-        pieces.append(king)
-        king = King("black", 7, 4)
-        pieces.append(king)
-        queen = Queen("white", 0, 3)
-        pieces.append(queen)
-        queen = Queen("black", 7, 3)
-        pieces.append(queen)
-        rook = Rook("white", 0, 0)
-        pieces.append(rook)
-        rook = Rook("white", 0, 7)
-        pieces.append(rook)
-        rook = Rook("black", 7, 0)
-        pieces.append(rook)
-        rook = Rook("black", 7, 7)
-        pieces.append(rook)
-        knight = Knight("white", 0, 1)
-        pieces.append(knight)
-        knight = Knight("white", 0, 6)
-        pieces.append(knight)
-        knight = Knight("black", 7, 1)
-        pieces.append(knight)
-        knight = Knight("black", 7, 6)
-        pieces.append(knight)
-        bishop = Bishop("white", 0, 2)
-        pieces.append(bishop)
-        bishop = Bishop("white", 0, 5)
-        pieces.append(bishop)
-        bishop = Bishop("black", 7, 2)
-        pieces.append(bishop)
-        bishop = Bishop("black", 7, 5)
-        pieces.append(bishop)
-        return pieces
 
 
 def main(player1, player2, time):

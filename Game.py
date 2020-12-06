@@ -39,10 +39,10 @@ class Game:
                        [None, None, None, None, None, None, None, None],
                        [None, None, None, None, None, None, None, None],
                        [Pawn("white", 6, 0), Pawn("white", 6, 1), Pawn("white", 6, 2), Pawn("white", 6, 3), Pawn(
-                           "white", 6, 4), Pawn("white", 6, 5), Pawn("white", 6, 6), Pawn("white", 6, 7)]
+                           "white", 6, 4), Pawn("white", 6, 5), Pawn("white", 6, 6), Pawn("white", 6, 7)],
                        [Rook("white", 7, 0), Knight("white", 7, 1), Bishop("white", 7, 2), Queen("white", 7, 3), King("white", 7, 4), Bishop("white", 7, 5), Knight("white", 7, 6), Rook("white", 7, 7)]]
         self.gui_piece = []
-        self.gui_board = [[]]
+        self.gui_board = []
         self.game_over = False
         self.ai_turn_limit = time
 
@@ -75,12 +75,11 @@ class Game:
                 if(not self.board[int(row/100)][int(col/100)] == '  '):
                     self.piece = tk.PhotoImage(
                         file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
-                    self.gui_piece[int(row/100)][int(col/100)] = (self.piece)
+                    self.gui_piece.append(self.piece)
                     self.c.image_names = self.piece
                     self.c.create_image(
-                        col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, )
-                else:
-                    self.gui_piece[int(row/100)][int(col/100)] = None
+                        col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
+        print(self.gui_piece)
 
         root.mainloop()
 

@@ -23,7 +23,14 @@ class Game:
         self.players = [player1, player2]
         self.colors = ['white', 'black']
         self.current_turn = 0
-        self.board = np.zeros([8, 8]).astype(np.uint8)
+        self.board = [['BR', 'BN', 'BB', 'BQ', 'BK', 'BB', 'BN', 'BR'],
+                      ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
+                      ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '],
+                      ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '],
+                      ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '],
+                      ['  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '],
+                      ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+                      ['WR', 'WN', 'WB', 'WQ', 'WK', 'WB', 'WN', 'WR']]
         self.pieces = self.initializeBoard()
         self.gui_board = []
         self.game_over = False
@@ -42,24 +49,23 @@ class Game:
             for col in range(0, 800, 100):
                 color = ''
                 if(white):
-                    color = 'white'
+                    color = '#eeeed2'
                 else:
-                    color = 'black'
+                    color = '#663300'
                 column.append(self.c.create_rectangle(
                     row, col, row+100, col+100, fill=color))
                 white = not white
             self.gui_board.append(column)
             white = not white
 
-        text = tk.Text(root, tabs=(200,))
-        text.pack(side="left", fill="both", expand=True)
-
-        pieces = u"\u2654\u2655\u2656\u2657\u2658\u2659\u265A\u265B\u265C\u265D\u265E\u265F\n"
-        font = tkFont.Font(family="Arial Unicode MS", size=64)
-        tag = "font-%s" % 0
-        text.tag_configure((tag,), font=font)
-        text.insert("end", "\t" + pieces, tag)
-        self.gui_board.insert(self.c.create_text(400, text))
+        for row in range(0, 800, 100):
+            # column = []
+            for col in range(0, 800, 100):
+                if(not self.board[int(row/100)][int(col/100)] == '  '):
+                    piece = tk.PhotoImage(
+                        file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
+                    self.c.create_image(
+                        row, col+5, image=piece, state=tk.NORMAL, anchor=tk.NW, )
 
         root.mainloop()
 

@@ -45,12 +45,66 @@ class Game:
         self.gui_board = []
         self.game_over = False
         self.ai_turn_limit = time
+        self.storedX = -1
+        self.storedY = -1
+
+        def movePiece(event):
+            if(self.storedX == -1 and self.storedY == -1):
+                self.storedX = int(event.y/100)
+                self.storedY = int(event.x/100)
+            else:
+                piece = self.pieces[self.storedX][self.storedY]
+                if(piece == None):
+                    self.storedX = -1
+                    self.storedY = -1
+                    pass
+                else:
+                    newX = int(event.y/100)
+                    newY = int(event.x/100)
+                    if(piece.movePiece(newX, newY)):
+                        self.pieces[self.storedX][self.storedY] = None
+                        self.pieces[newX][newY] = piece
+                        self.board[self.storedX][self.storedY] = '  '
+                        self.board[newX][newY] = piece.getPieceCode()
+                        self.storedX = -1
+                        self.storedY = -1
+
+                        white = True
+                        for row in range(0, 800, 100):
+                            column = []
+                            for col in range(0, 800, 100):
+                                color = ''
+                                if(white):
+                                    color = '#eeeed2'
+                                else:
+                                    color = '#663300'
+                                column.append(self.c.create_rectangle(
+                                    row, col, row+100, col+100, fill=color))
+                                white = not white
+                            self.gui_board.append(column)
+                            white = not white
+
+                        for row in range(0, 800, 100):
+                            # column = []
+                            for col in range(0, 800, 100):
+                                if(not self.board[int(row/100)][int(col/100)] == '  '):
+                                    self.piece = tk.PhotoImage(
+                                        file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
+                                    self.gui_piece.append(self.piece)
+                                    self.c.image_names = self.piece
+                                    self.c.create_image(
+                                        col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
+                        root.mainloop()
+                    else:
+                        self.storedY = -1
+                        self.storedX = -1
 
         root = tk.Tk()
         root.title('Chess')
         self.player_string = tk.Label(root, text=player1.player_string)
         self.player_string.pack()
         self.c = tk.Canvas(root, width=800, height=800)
+        self.c.bind("<Button-1>", movePiece)
         self.c.pack()
         self.piece = None
 
@@ -79,7 +133,6 @@ class Game:
                     self.c.image_names = self.piece
                     self.c.create_image(
                         col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
-        print(self.gui_piece)
 
         root.mainloop()
 

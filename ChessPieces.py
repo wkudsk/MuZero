@@ -51,6 +51,8 @@ class King(ChessPieces):
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
             return False
+        elif(chessPiece.getColor() == self.color):
+            return False
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if(self.filePosition + i == chessPiece.getFile() and self.rowPosition + j == chessPiece.getRow()):
@@ -86,6 +88,8 @@ class Queen(ChessPieces):
 
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
+            return False
+        elif(chessPiece.getColor() == self.color):
             return False
         newRow = chessPiece.getRow()
         newFile = chessPiece.getFile()
@@ -132,6 +136,8 @@ class Knight(ChessPieces):
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
             return False
+        elif(chessPiece.getColor() == self.color):
+            return False
         # possible attack row positions
         attackRow = [-1, 1, -1, 1, -2, -2, 2, 2]
         # possible attack col positions
@@ -157,7 +163,9 @@ class Pawn(ChessPieces):
             self.pieceCode = "BP"
 
     def movePiece(self, newRow, newFile):
-        if(self.color == "white" and self.rowPosition - 1 == newRow):
+        if(abs(self.filePosition - newFile) > 0):
+            return False
+        elif(self.color == "white" and self.rowPosition - 1 == newRow):
             self.rowPosition = newRow
             self.filePosition = newFile
             return True
@@ -179,11 +187,30 @@ class Pawn(ChessPieces):
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
             return False
+        elif(chessPiece.getColor() == self.color):
+            return False
         pieceFile = chessPiece.getFile()
         pieceRow = chessPiece.getRow()
-        if(self.color == "white" and abs(self.filePosition - pieceFile) == 1 and self.rowPosition + 1 == pieceRow):
+        if(self.color == "white" and abs(self.filePosition - pieceFile) == 1 and self.rowPosition - 1 == pieceRow and chessPiece.getColor() == "black"):
             return True
-        elif(self.color == "black" and abs(self.filePosition - pieceFile) == 1 and self.rowPosition - 1 == pieceRow):
+        elif(self.color == "black" and abs(self.filePosition - pieceFile) == 1 and self.rowPosition + 1 == pieceRow and chessPiece.getColor() == "white"):
+            return True
+        else:
+            return False
+
+    def isBlocked(self, chessPiece):
+        if(chessPiece == None):
+            return False
+        pieceRow = chessPiece.getRow()
+        if(chessPiece.getColor() == self.color):
+            return True
+        elif(self.color == "white" and self.rowPosition - 1 == pieceRow):
+            return True
+        elif(self.color == "white" and self.rowPosition == 6 and self.rowPosition - 2 == pieceRow):
+            return True
+        elif(self.color == "black" and self.rowPosition + 1 == pieceRow):
+            return True
+        elif(self.color == "black" and self.rowPosition == 1 and self.rowPosition + 2 == pieceRow):
             return True
         else:
             return False
@@ -212,6 +239,8 @@ class Bishop(ChessPieces):
 
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
+            return False
+        elif(chessPiece.getColor() == self.color):
             return False
         # if self is on same diagonal as q, this is attack. we use absolute values to determine diagonal
         if (abs(self.rowPosition - chessPiece.getRow()) == abs(self.filePosition - chessPiece.getFile())):
@@ -242,6 +271,8 @@ class Rook(ChessPieces):
 
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
+            return False
+        elif(chessPiece.getColor() == self.color):
             return False
         if (self.rowPosition == chessPiece.getRow() or self.filePosition == chessPiece.getFile()):
             return True

@@ -61,6 +61,20 @@ class Game:
                 else:
                     newX = int(event.y/100)
                     newY = int(event.x/100)
+                    if(piece.getPieceCode().endswith("P")):
+                        if(piece.isAttacking(self.pieces[newX][newY])):
+                            piece.filePosition = newY
+                            piece.rowPosition = newX
+                            self.pieces[self.storedX][self.storedY] = None
+                            self.pieces[newX][newY] = piece
+                            self.board[self.storedX][self.storedY] = '  '
+                            self.board[newX][newY] = piece.getPieceCode()
+                            self.storedX = -1
+                            self.storedY = -1
+                        elif(piece.isBlocked(self.pieces[newX][newY])):
+                            self.storedX = -1
+                            self.storedY = -1
+                            return
                     if(piece.movePiece(newX, newY)):
                         self.pieces[self.storedX][self.storedY] = None
                         self.pieces[newX][newY] = piece
@@ -69,35 +83,36 @@ class Game:
                         self.storedX = -1
                         self.storedY = -1
 
-                        white = True
-                        for row in range(0, 800, 100):
-                            column = []
-                            for col in range(0, 800, 100):
-                                color = ''
-                                if(white):
-                                    color = '#eeeed2'
-                                else:
-                                    color = '#663300'
-                                column.append(self.c.create_rectangle(
-                                    row, col, row+100, col+100, fill=color))
-                                white = not white
-                            self.gui_board.append(column)
-                            white = not white
-
-                        for row in range(0, 800, 100):
-                            # column = []
-                            for col in range(0, 800, 100):
-                                if(not self.board[int(row/100)][int(col/100)] == '  '):
-                                    self.piece = tk.PhotoImage(
-                                        file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
-                                    self.gui_piece.append(self.piece)
-                                    self.c.image_names = self.piece
-                                    self.c.create_image(
-                                        col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
-                        root.mainloop()
                     else:
                         self.storedY = -1
                         self.storedX = -1
+
+                    white = True
+                    for row in range(0, 800, 100):
+                        column = []
+                        for col in range(0, 800, 100):
+                            color = ''
+                            if(white):
+                                color = '#eeeed2'
+                            else:
+                                color = '#663300'
+                            column.append(self.c.create_rectangle(
+                                row, col, row+100, col+100, fill=color))
+                            white = not white
+                        self.gui_board.append(column)
+                        white = not white
+
+                    for row in range(0, 800, 100):
+                        # column = []
+                        for col in range(0, 800, 100):
+                            if(not self.board[int(row/100)][int(col/100)] == '  '):
+                                self.piece = tk.PhotoImage(
+                                    file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
+                                self.gui_piece.append(self.piece)
+                                self.c.image_names = self.piece
+                                self.c.create_image(
+                                    col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
+                    root.mainloop()
 
         root = tk.Tk()
         root.title('Chess')
@@ -137,9 +152,6 @@ class Game:
         root.mainloop()
 
     def make_move(self):
-        pass
-
-    def update_board(self, move, player_num):
         pass
 
     def game_completed(self, player_num):

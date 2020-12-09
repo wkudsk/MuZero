@@ -71,11 +71,11 @@ class Game:
                             self.board[newX][newY] = piece.getPieceCode()
                             self.storedX = -1
                             self.storedY = -1
-                        elif(piece.isBlocked(self.pieces[newX][newY])):
+                        elif(piece.isBlockedBy(self.pieces[newX][newY])):
                             self.storedX = -1
                             self.storedY = -1
                             return
-                    if(piece.movePiece(newX, newY)):
+                    if(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
                         self.pieces[self.storedX][self.storedY] = None
                         self.pieces[newX][newY] = piece
                         self.board[self.storedX][self.storedY] = '  '

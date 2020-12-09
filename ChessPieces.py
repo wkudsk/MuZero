@@ -8,6 +8,9 @@ class ChessPieces:
     def movePiece(self, newRow, newFile):
         pass
 
+    def isBlockedBy(self, board, newRow, newFile):
+        pass
+
     def isAttacking(self, chessPiece):
         pass
 
@@ -59,6 +62,9 @@ class King(ChessPieces):
                     return True
         return False
 
+    def isBlocked(self, board, newRow, newFile):
+        return True
+
     def getPieceCode(self):
         return self.pieceCode
 
@@ -106,6 +112,39 @@ class Queen(ChessPieces):
         else:
             return False  # self is not attacking q
 
+    def isBlocked(self, board, newRow, newFile):
+        if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+            return False
+
+        if(newRow == self.rowPosition):
+            unitVector = int((newFile-self.filePosition) /
+                             abs(newFile-self.filePosition))
+            for i in range(self.filePosition + unitVector, newFile, unitVector):
+                if(not board[newRow][i] == None):
+                    return False
+        elif(newFile == self.filePosition):
+            unitVector = (int((newRow-self.rowPosition) /
+                              abs(newRow-self.rowPosition)))
+            for i in range(self.rowPosition + unitVector, newRow, unitVector):
+                if(not board[i][newFile] == None):
+                    return False
+        else:
+            unitVectorX = int((newRow-self.rowPosition) /
+                              abs(newRow-self.rowPosition))
+            unitVectorY = int((newFile-self.filePosition) /
+                              abs(newFile-self.filePosition))
+            if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+                return True
+            j = self.filePosition + unitVectorY
+            for i in range(self.rowPosition + unitVectorX, newRow, unitVectorX):
+                if(not board[i][j] == None):
+                    print("Blocked by: %d %d" %
+                          (i, j))
+                    return False
+                j += unitVectorY
+
+        return True
+
     def getPieceCode(self):
         return self.pieceCode
 
@@ -148,6 +187,9 @@ class Knight(ChessPieces):
                 return True
 
         return False
+
+    def isBlocked(self, board, newRow, newFile):
+        return True
 
     def getPieceCode(self):
         return self.pieceCode
@@ -198,7 +240,7 @@ class Pawn(ChessPieces):
         else:
             return False
 
-    def isBlocked(self, chessPiece):
+    def isBlockedBy(self, chessPiece):
         if(chessPiece == None):
             return False
         pieceRow = chessPiece.getRow()
@@ -214,6 +256,9 @@ class Pawn(ChessPieces):
             return True
         else:
             return False
+
+    def isBlocked(self, board, newRow, newFile):
+        return True
 
     def getPieceCode(self):
         return self.pieceCode
@@ -248,6 +293,23 @@ class Bishop(ChessPieces):
         else:
             return False
 
+    def isBlocked(self, board, newRow, newFile):
+        unitVectorX = int((newRow-self.rowPosition) /
+                          abs(newRow-self.rowPosition))
+        unitVectorY = int((newFile-self.filePosition) /
+                          abs(newFile-self.filePosition))
+        if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+            return True
+        j = self.filePosition + unitVectorY
+        for i in range(self.rowPosition + unitVectorX, newRow, unitVectorX):
+            if(not board[i][j] == None):
+                print("Blocked by: %d %d" %
+                      (i, j))
+                return False
+            j += unitVectorY
+
+        return True
+
     def getPieceCode(self):
         return self.pieceCode
 
@@ -278,6 +340,24 @@ class Rook(ChessPieces):
             return True
         else:
             return False
+
+    def isBlocked(self, board, newRow, newFile):
+        if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+            return False
+
+        if(newRow == self.rowPosition):
+            unitVector = int((newFile-self.filePosition) /
+                             abs(newFile-self.filePosition))
+            for i in range(self.filePosition + unitVector, newFile, unitVector):
+                if(not board[newRow][i] == None):
+                    return False
+        elif(newFile == self.filePosition):
+            unitVector = (int((newRow-self.rowPosition) /
+                              abs(newRow-self.rowPosition)))
+            for i in range(self.rowPosition + unitVector, newRow, unitVector):
+                if(not board[i][newFile] == None):
+                    return False
+        return True
 
     def getPieceCode(self):
         return self.pieceCode

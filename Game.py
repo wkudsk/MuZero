@@ -151,11 +151,46 @@ class Game:
 
         root.mainloop()
 
-    def make_move(self):
+    def makeMove(self, color):
         pass
 
-    def game_completed(self, player_num):
-        pass
+    def kingCoordinates(self, color):
+        colorCode = ''
+        if(color == 'white'):
+            colorCode = 'W'
+        elif(color == 'black'):
+            colorCode = 'B'
+        else:
+            return []
+
+        for i in range(0, 8):
+            for j in range(0, 8):
+                pieceCode = self.board[i][j]
+                if(pieceCode.startswith(colorCode) and pieceCode.endswith('K')):
+                    return [i, j]
+        return []
+
+    def gameCompleted(self, color):
+        blackKingCoordinates = self.kingCoordinates('black')
+        blackKingRow = blackKingCoordinates[0]
+        blackKingFile = blackKingCoordinates[1]
+        blackKing = self.pieces[blackKingRow][blackKingFile]
+
+        whiteKingCoordinates = self.kingCoordinates('white')
+        whiteKingRow = whiteKingCoordinates[0]
+        whiteKingFile = whiteKingCoordinates[1]
+        whiteKing = self.pieces[whiteKingRow][whiteKingFile]
+
+        if(blackKing.isInCheckMate(self.pieces) and color == 'white'):
+            return True
+        elif(blackKing.isInCheckMate(self.pieces) and color == 'black'):
+            return True
+        elif(whiteKing.isInCheckMate(self.pieces) and color == 'white'):
+            return True
+        elif(whiteKing.isInCheckMate(self.pieces) and color == 'black'):
+            return True
+        else:
+            return False
 
 
 def main(player1, player2, time):
@@ -176,6 +211,9 @@ def main(player1, player2, time):
             return HumanPlayer(num)
 
     Game(make_player(player1, 1), make_player(player2, 2), time)
+    # color = 'white'
+    # while(not Game.gameCompleted('white')):
+    #     color = 'black'
 
 
 def play_game(player1, player2):

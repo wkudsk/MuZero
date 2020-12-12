@@ -51,6 +51,9 @@ class King(ChessPieces):
                     return True
         return False
 
+    def castle(self, newRow, newFile):
+        pass
+
     def isAttacking(self, chessPiece):
         if(chessPiece == None):
             return False
@@ -63,7 +66,17 @@ class King(ChessPieces):
         return False
 
     def isBlocked(self, board, newRow, newFile):
+        if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+            return False
         return True
+
+    def isInCheckMate(self, board):
+        for piece in board:
+            if((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self)):
+                for i, j in range(-1, 2):
+                    if(board[i][j] == None):
+                        return False
+                return True
 
     def getPieceCode(self):
         return self.pieceCode
@@ -189,7 +202,8 @@ class Knight(ChessPieces):
         return False
 
     def isBlocked(self, board, newRow, newFile):
-        return True
+        if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+            return False
 
     def getPieceCode(self):
         return self.pieceCode
@@ -258,6 +272,8 @@ class Pawn(ChessPieces):
             return False
 
     def isBlocked(self, board, newRow, newFile):
+        if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
+            return False
         return True
 
     def getPieceCode(self):

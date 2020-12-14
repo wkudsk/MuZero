@@ -71,12 +71,14 @@ class King(ChessPieces):
         return True
 
     def isInCheckMate(self, board):
-        for piece in board:
-            if((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self)):
-                for i, j in range(-1, 2):
-                    if(board[i][j] == None):
-                        return False
-                return True
+        for row in board:
+            for piece in row:
+                if((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self)):
+                    for i in range(-1, 2):
+                        for j in range(-1, 2):
+                            if(board[i][j] == None):
+                                return False
+                    return True
 
     def getPieceCode(self):
         return self.pieceCode

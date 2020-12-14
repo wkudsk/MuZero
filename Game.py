@@ -47,6 +47,7 @@ class Game:
         self.ai_turn_limit = time
         self.storedX = -1
         self.storedY = -1
+        self.turn = 'white'
 
         def movePiece(event):
             if(self.storedX == -1 and self.storedY == -1):
@@ -54,7 +55,7 @@ class Game:
                 self.storedY = int(event.x/100)
             else:
                 piece = self.pieces[self.storedX][self.storedY]
-                if(piece == None):
+                if(piece == None or (not piece.getColor() == self.turn)):
                     self.storedX = -1
                     self.storedY = -1
                     pass
@@ -62,57 +63,24 @@ class Game:
                     newX = int(event.y/100)
                     newY = int(event.x/100)
                     if(piece.getPieceCode().endswith("P")):
-                        if(piece.isAttacking(self.pieces[newX][newY])):
-                            piece.filePosition = newY
-                            piece.rowPosition = newX
-                            self.pieces[self.storedX][self.storedY] = None
-                            self.pieces[newX][newY] = piece
-                            self.board[self.storedX][self.storedY] = '  '
-                            self.board[newX][newY] = piece.getPieceCode()
-                            self.storedX = -1
-                            self.storedY = -1
-                        elif(piece.isBlockedBy(self.pieces[newX][newY])):
-                            self.storedX = -1
-                            self.storedY = -1
-                            return
-                    if(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
-                        self.pieces[self.storedX][self.storedY] = None
-                        self.pieces[newX][newY] = piece
-                        self.board[self.storedX][self.storedY] = '  '
-                        self.board[newX][newY] = piece.getPieceCode()
-                        self.storedX = -1
-                        self.storedY = -1
-
+                        self.movePawn(piece, newX, newY)
+                    elif(piece.getPieceCode().endswith("K") and abs(self.storedY - newY) == 2):
+                        pass
+                    elif(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
+                        self.makeMove(piece, newX, newY)
                     else:
                         self.storedY = -1
                         self.storedX = -1
 
-                    white = True
-                    for row in range(0, 800, 100):
-                        column = []
-                        for col in range(0, 800, 100):
-                            color = ''
-                            if(white):
-                                color = '#eeeed2'
-                            else:
-                                color = '#663300'
-                            column.append(self.c.create_rectangle(
-                                row, col, row+100, col+100, fill=color))
-                            white = not white
-                        self.gui_board.append(column)
-                        white = not white
-
-                    for row in range(0, 800, 100):
-                        # column = []
-                        for col in range(0, 800, 100):
-                            if(not self.board[int(row/100)][int(col/100)] == '  '):
-                                self.piece = tk.PhotoImage(
-                                    file='./chesspieceicons/%s.png' % self.board[int(row/100)][int(col/100)])
-                                self.gui_piece.append(self.piece)
-                                self.c.image_names = self.piece
-                                self.c.create_image(
-                                    col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
-                    root.mainloop()
+                    if(self.gameCompleted(self.turn)):
+                        self.drawBoard(root)
+                        quit()
+                    else:
+                        if(self.turn == 'white'):
+                            self.turn = 'black'
+                        else:
+                            self.turn = 'white'
+                        self.drawBoard(root)
 
         root = tk.Tk()
         root.title('Chess')
@@ -123,6 +91,10 @@ class Game:
         self.c.pack()
         self.piece = None
 
+        self.drawBoard(root)
+        root.mainloop()
+
+    def drawBoard(self, root):
         white = True
         for row in range(0, 800, 100):
             column = []
@@ -149,10 +121,30 @@ class Game:
                     self.c.create_image(
                         col, row+5, image=self.piece, state=tk.NORMAL, anchor=tk.NW, tag='piece')
 
-        root.mainloop()
+    def movePawn(self, piece, newX, newY):
+        if(piece.isAttacking(self.pieces[newX][newY])):
+            piece.filePosition = newY
+            piece.rowPosition = newX
+            self.makeMove(piece, newX, newY)
+        elif(piece.isBlockedBy(self.pieces[newX][newY])):
+            self.storedX = -1
+            self.storedY = -1
+        elif(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
+            self.makeMove(piece, newX, newY)
 
-    def makeMove(self, color):
+    def castle(self, ):
         pass
+
+    def promote(self, ):
+        pass
+
+    def makeMove(self, piece, newX, newY):
+        self.pieces[self.storedX][self.storedY] = None
+        self.pieces[newX][newY] = piece
+        self.board[self.storedX][self.storedY] = '  '
+        self.board[newX][newY] = piece.getPieceCode()
+        self.storedX = -1
+        self.storedY = -1
 
     def kingCoordinates(self, color):
         colorCode = ''
@@ -168,26 +160,36 @@ class Game:
                 pieceCode = self.board[i][j]
                 if(pieceCode.startswith(colorCode) and pieceCode.endswith('K')):
                     return [i, j]
-        return []
+        return [-1, -1]
 
     def gameCompleted(self, color):
         blackKingCoordinates = self.kingCoordinates('black')
         blackKingRow = blackKingCoordinates[0]
         blackKingFile = blackKingCoordinates[1]
-        blackKing = self.pieces[blackKingRow][blackKingFile]
 
         whiteKingCoordinates = self.kingCoordinates('white')
         whiteKingRow = whiteKingCoordinates[0]
         whiteKingFile = whiteKingCoordinates[1]
         whiteKing = self.pieces[whiteKingRow][whiteKingFile]
 
+        if(blackKingRow == -1 or whiteKingRow == -1):
+            print("Couldnt find King")
+            return False
+
+        whiteKing = self.pieces[whiteKingRow][whiteKingFile]
+        blackKing = self.pieces[blackKingRow][blackKingFile]
+
         if(blackKing.isInCheckMate(self.pieces) and color == 'white'):
+            print('white has won')
             return True
         elif(blackKing.isInCheckMate(self.pieces) and color == 'black'):
+            print('white has won')
             return True
         elif(whiteKing.isInCheckMate(self.pieces) and color == 'white'):
+            print('black has won')
             return True
         elif(whiteKing.isInCheckMate(self.pieces) and color == 'black'):
+            print('white has won')
             return True
         else:
             return False
@@ -210,10 +212,13 @@ def main(player1, player2, time):
         elif name == 'human':
             return HumanPlayer(num)
 
-    Game(make_player(player1, 1), make_player(player2, 2), time)
-    # color = 'white'
-    # while(not Game.gameCompleted('white')):
-    #     color = 'black'
+    game = Game(make_player(player1, 1), make_player(player2, 2), time)
+    color = 'white'
+    while(not game.gameCompleted(color)):
+        if(color == 'white'):
+            color = 'black'
+        else:
+            color = 'white'
 
 
 def play_game(player1, player2):

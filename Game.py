@@ -72,10 +72,13 @@ class Game:
                         self.storedY = -1
                         self.storedX = -1
 
+                    print("Check if game completed")
                     if(self.gameCompleted(self.turn)):
+                        print("game completed")
                         self.drawBoard(root)
                         quit()
                     else:
+                        print("game incomplete")
                         if(self.turn == 'white'):
                             self.turn = 'black'
                         else:
@@ -178,6 +181,7 @@ class Game:
 
         whiteKing = self.pieces[whiteKingRow][whiteKingFile]
         blackKing = self.pieces[blackKingRow][blackKingFile]
+        print("Found the kings")
 
         if(blackKing.isInCheckMate(self.pieces) and color == 'white'):
             print('white has won')
@@ -213,12 +217,6 @@ def main(player1, player2, time):
             return HumanPlayer(num)
 
     game = Game(make_player(player1, 1), make_player(player2, 2), time)
-    color = 'white'
-    while(not game.gameCompleted(color)):
-        if(color == 'white'):
-            color = 'black'
-        else:
-            color = 'white'
 
 
 def play_game(player1, player2):

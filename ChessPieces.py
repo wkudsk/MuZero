@@ -70,15 +70,39 @@ class King(ChessPieces):
             return False
         return True
 
-    def isInCheckMate(self, board):
+    def isInCheck(self, board):
         for row in board:
             for piece in row:
-                if((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self)):
-                    for i in range(-1, 2):
-                        for j in range(-1, 2):
-                            if(board[i][j] == None):
-                                return False
+                if((not piece == None) and piece.getFile() == self.getFile() and piece.getRow() == self.getRow()):
+                    pass
+                elif((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self) and piece.isBlocked(board, self.getRow(), self.getFile())):
+                    print("Is in Check")
                     return True
+        return False
+
+    def isInCheckMate(self, board):
+        originalRow = self.rowPosition
+        originalFile = self.filePosition
+        if(self.isInCheck(board)):
+            print("In Check")
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    r = self.rowPosition + i
+                    f = self.filePosition + j
+                    if(board[r][f] == None or self.isBlocked(board, r, f)):
+                        print("Found a spot to move to")
+                        self.movePiece(self.rowPosition + i,
+                                       self.filePosition + j)
+                        if(self.isInCheck(board)):
+                            print("Attacked in this spot")
+                            self.movePiece(originalRow, originalFile)
+                        else:
+                            self.movePiece(originalRow, originalFile)
+                            return False
+            return True
+        else:
+            print("Not In Check")
+            return False
 
     def getPieceCode(self):
         return self.pieceCode
@@ -206,6 +230,8 @@ class Knight(ChessPieces):
     def isBlocked(self, board, newRow, newFile):
         if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
             return False
+        else:
+            return True
 
     def getPieceCode(self):
         return self.pieceCode

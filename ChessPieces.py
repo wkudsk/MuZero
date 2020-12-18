@@ -73,9 +73,11 @@ class King(ChessPieces):
     def isInCheck(self, board):
         for row in board:
             for piece in row:
-                if((not piece == None) and piece.getFile() == self.getFile() and piece.getRow() == self.getRow()):
+                if(piece == None):
                     pass
-                elif((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self) and piece.isBlocked(board, self.getRow(), self.getFile())):
+                elif(piece.getFile() == self.getFile() and piece.getRow() == self.getRow()):
+                    pass
+                elif((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self) and (not piece.isBlocked(board, self.getRow(), self.getFile()))):
                     print("Is in Check")
                     return True
         return False
@@ -89,7 +91,7 @@ class King(ChessPieces):
                 for j in range(-1, 2):
                     r = self.rowPosition + i
                     f = self.filePosition + j
-                    if(board[r][f] == None or self.isBlocked(board, r, f)):
+                    if(board[r][f] == None or not self.isBlocked(board, r, f)):
                         print("Found a spot to move to")
                         self.movePiece(self.rowPosition + i,
                                        self.filePosition + j)
@@ -140,13 +142,9 @@ class Queen(ChessPieces):
         newFile = chessPiece.getFile()
         # if self has same row or column as q, self is attacking q
         if (self.rowPosition == newRow or self.filePosition == newFile):
-            self.rowPosition = newRow
-            self.filePosition = newFile
             return True
         # if self is on same diagonal as q, this is attack. we use absolute values to determine diagonal
         elif(abs(self.rowPosition - newRow) == abs(self.filePosition - newFile)):
-            self.rowPosition = newRow
-            self.filePosition = newFile
             return True
         else:
             return False  # self is not attacking q
@@ -155,19 +153,20 @@ class Queen(ChessPieces):
         if(not (board[newRow][newFile] == None) and board[newRow][newFile].getColor() == self.color):
             return False
 
-        if(newRow == self.rowPosition):
+        if(newRow == self.rowPosition and (not newFile == self.filePosition)):
+            print(newRow)
             unitVector = int((newFile-self.filePosition) /
                              abs(newFile-self.filePosition))
             for i in range(self.filePosition + unitVector, newFile, unitVector):
                 if(not board[newRow][i] == None):
                     return False
-        elif(newFile == self.filePosition):
+        elif(newFile == self.filePosition and (not newRow == self.rowPosition)):
             unitVector = (int((newRow-self.rowPosition) /
                               abs(newRow-self.rowPosition)))
             for i in range(self.rowPosition + unitVector, newRow, unitVector):
                 if(not board[i][newFile] == None):
                     return False
-        else:
+        elif(abs(self.rowPosition - newRow) == abs(self.filePosition - newFile)):
             unitVectorX = int((newRow-self.rowPosition) /
                               abs(newRow-self.rowPosition))
             unitVectorY = int((newFile-self.filePosition) /

@@ -49,6 +49,38 @@ class Game:
         self.storedY = -1
         self.turn = 'white'
 
+        def promoteKnight(event):
+            print("Found event")
+            if(self.storedX == -1 or self.storedY == -1):
+                pass
+            else:
+                newX = int(event.y/100)
+                newY = int(event.x/100)
+                piece = self.pieces[self.storedX][self.storedY]
+                if(piece == None or (not piece.getColor() == self.turn)):
+                    self.storedX = -1
+                    self.storedY = -1
+                    pass
+                elif(piece.getPieceCode().endswith("P") and (newX == 0 or newX == 7)):
+                    print("Found pawn and new pawn position")
+                    self.promoteKnight(piece, newX, newY)
+                else:
+                    self.storedX = -1
+                    self.storedY = -1
+
+                print("Check if game completed")
+                if(self.gameCompleted(self.turn)):
+                    print("game completed")
+                    self.drawBoard(root)
+                    quit()
+                else:
+                    print("game incomplete")
+                    if(self.turn == 'white'):
+                        self.turn = 'black'
+                    else:
+                        self.turn = 'white'
+                    self.drawBoard(root)
+
         def movePiece(event):
             if(self.storedX == -1 and self.storedY == -1):
                 self.storedX = int(event.y/100)
@@ -63,7 +95,10 @@ class Game:
                     newX = int(event.y/100)
                     newY = int(event.x/100)
                     if(piece.getPieceCode().endswith("P")):
-                        self.movePawn(piece, newX, newY)
+                        if(newX == 0 or newX == 7):
+                            self.promoteQueen(piece, newX, newY)
+                        else:
+                            self.movePawn(piece, newX, newY)
                     elif(piece.getPieceCode().endswith("K") and abs(self.storedY - newY) == 2):
                         pass
                     elif(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
@@ -91,6 +126,7 @@ class Game:
         self.player_string.pack()
         self.c = tk.Canvas(root, width=800, height=800)
         self.c.bind("<Button-1>", movePiece)
+        self.c.bind("<Button-3>", promoteKnight)
         self.c.pack()
         self.piece = None
 
@@ -98,6 +134,8 @@ class Game:
         root.mainloop()
 
     def drawBoard(self, root):
+        self.gui_board.clear()
+        self.gui_piece.clear()
         white = True
         for row in range(0, 800, 100):
             column = []
@@ -138,8 +176,27 @@ class Game:
     def castle(self, ):
         pass
 
-    def promote(self, ):
-        pass
+    def promoteQueen(self, piece, newX, newY):
+        if(piece.isAttacking(self.pieces[newX][newY])):
+            piece.filePosition = newY
+            piece.rowPosition = newX
+            self.makeMove(Queen(piece.getColor(), newX, newY), newX, newY)
+        elif(piece.isBlockedBy(self.pieces[newX][newY])):
+            self.storedX = -1
+            self.storedY = -1
+        elif(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
+            self.makeMove(Queen(piece.getColor(), newX, newY), newX, newY)
+
+    def promoteKnight(self, piece, newX, newY):
+        if(piece.isAttacking(self.pieces[newX][newY])):
+            piece.filePosition = newY
+            piece.rowPosition = newX
+            self.makeMove(Knight(piece.getColor(), newX, newY), newX, newY)
+        elif(piece.isBlockedBy(self.pieces[newX][newY])):
+            self.storedX = -1
+            self.storedY = -1
+        elif(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
+            self.makeMove(Knight(piece.getColor(), newX, newY), newX, newY)
 
     def makeMove(self, piece, newX, newY):
         self.pieces[self.storedX][self.storedY] = None

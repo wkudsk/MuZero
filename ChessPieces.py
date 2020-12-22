@@ -77,7 +77,7 @@ class King(ChessPieces):
                     pass
                 elif(piece.getFile() == self.getFile() and piece.getRow() == self.getRow()):
                     pass
-                elif((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self) and (not piece.isBlocked(board, self.getRow(), self.getFile()))):
+                elif((not piece == None) and (not piece.getColor() == self.color) and piece.isAttacking(self) and (piece.isBlocked(board, self.getRow(), self.getFile()))):
                     print("Is in Check")
                     return True
         return False

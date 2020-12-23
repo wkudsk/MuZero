@@ -106,16 +106,25 @@ class Game:
                             self.promoteQueen(piece, newX, newY)
                         else:
                             self.movePawn(piece, newX, newY)
-                    elif(piece.getPieceCode().endswith("K") and abs(self.storedY - newY) == 2 and not piece.isInCheck(self.pieces)):
+                    elif(piece.getPieceCode().endswith("K") and abs(self.storedY - newY) > 1 and (not piece.isInCheck(self.pieces)) and piece.canCastle):
                         if(newY - self.storedY > 0):
-                            self.castle(self.turn, True, piece, newX, newY)
+                            if(not self.castle(self.turn, True, piece, newX, newY)):
+                                self.storedX = -1
+                                self.storedY = -1
+                                return
                         else:
-                            self.castle(self.turn, False, piece, newX, newY)
+                            if(not self.castle(self.turn, False, piece, newX, newY)):
+                                self.storedX = -1
+                                self.storedY = -1
+                                return
+                        self.storedX = -1
+                        self.storedY = -1
                     elif(piece.isBlocked(self.pieces, newX, newY) and piece.movePiece(newX, newY)):
                         self.makeMove(piece, newX, newY)
                     else:
                         self.storedY = -1
                         self.storedX = -1
+                        return
 
                     print("Check if game completed")
                     if(self.gameCompleted(self.turn)):
@@ -187,7 +196,7 @@ class Game:
     def castle(self, color, moveRight, king, newX, newY):
         if(color == 'black' and moveRight):
             rook = self.pieces[0][7]
-            if(not rook == None and rook.getPieceCode() == 'BR'):
+            if(not rook == None and rook.getPieceCode() == 'BR' and rook.canCastle):
                 if(rook.isBlocked(self.pieces, 0, 5)):
                     for i in range(5, 6, 1):
                         king.movePiece(0, i)
@@ -200,13 +209,14 @@ class Game:
                     self.pieces[0][5] = rook
                     self.board[0][7] = '  '
                     self.board[0][5] = rook.getPieceCode()
+                    return True
                 else:
                     return False
             else:
                 return False
         elif(color == 'black' and not moveRight):
             rook = self.pieces[0][0]
-            if(not rook == None and rook.getPieceCode() == 'BR'):
+            if(not rook == None and rook.getPieceCode() == 'BR' and rook.canCastle):
                 if(rook.isBlocked(self.pieces, 0, 3)):
                     for i in range(3, 2, -1):
                         king.movePiece(0, i)
@@ -219,13 +229,14 @@ class Game:
                     self.pieces[0][3] = rook
                     self.board[0][0] = '  '
                     self.board[0][3] = rook.getPieceCode()
+                    return True
                 else:
                     return False
             else:
                 return False
         elif(color == 'white' and moveRight):
             rook = self.pieces[7][7]
-            if(not rook == None and rook.getPieceCode() == 'WR'):
+            if(not rook == None and rook.getPieceCode() == 'WR' and rook.canCastle):
                 if(rook.isBlocked(self.pieces, 7, 5)):
                     for i in range(5, 6, 1):
                         king.movePiece(7, i)
@@ -238,13 +249,14 @@ class Game:
                     self.pieces[7][5] = rook
                     self.board[7][7] = '  '
                     self.board[7][5] = rook.getPieceCode()
+                    return True
                 else:
                     return False
             else:
                 return False
         elif(color == 'white' and not moveRight):
             rook = self.pieces[7][0]
-            if(not rook == None and rook.getPieceCode() == 'WR'):
+            if(not rook == None and rook.getPieceCode() == 'WR' and rook.canCastle):
                 if(rook.isBlocked(self.pieces, 7, 3)):
                     for i in range(3, 2, -1):
                         king.movePiece(7, i)
@@ -257,6 +269,7 @@ class Game:
                     self.pieces[7][3] = rook
                     self.board[7][0] = '  '
                     self.board[7][3] = rook.getPieceCode()
+                    return True
                 else:
                     return False
             else:

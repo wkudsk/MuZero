@@ -37,12 +37,14 @@ class King(ChessPieces):
     def __init__(self, color, startRow, startFile):
         super().__init__(color, startRow, startFile)
         self.pieceCode = ""
+        self.canCastle = True
         if(self.getColor() == "white"):
             self.pieceCode = "WK"
         else:
             self.pieceCode = "BK"
 
     def movePiece(self, newRow, newFile):
+        self.canCastle = False
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if(self.filePosition + i == newFile and self.rowPosition + j == newRow):
@@ -361,12 +363,14 @@ class Rook(ChessPieces):
     def __init__(self, color, startRow, startFile):
         super().__init__(color, startRow, startFile)
         self.pieceCode = ""
+        self.canCastle = True
         if(self.getColor() == "white"):
             self.pieceCode = "WR"
         else:
             self.pieceCode = "BR"
 
     def movePiece(self, newRow, newFile):
+        self.canCastle = False
         if (self.rowPosition == newRow or self.filePosition == newFile):
             self.rowPosition = newRow
             self.filePosition = newFile

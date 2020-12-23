@@ -106,7 +106,7 @@ class Game:
                             self.promoteQueen(piece, newX, newY)
                         else:
                             self.movePawn(piece, newX, newY)
-                    elif(piece.getPieceCode().endswith("K") and abs(self.storedY - newY) > 1 and (not piece.isInCheck(self.pieces)) and piece.canCastle):
+                    elif(piece.getPieceCode().endswith("K") and abs(self.storedY - newY) == 2 and abs(self.storedX - newX) == 0 and (not piece.isInCheck(self.pieces)) and piece.canCastle):
                         if(newY - self.storedY > 0):
                             if(not self.castle(self.turn, True, piece, newX, newY)):
                                 self.storedX = -1
@@ -203,6 +203,7 @@ class Game:
                         if(king.isInCheck(self.pieces)):
                             king.movePiece(0, 4)
                             return False
+                    king.movePiece(0, 6)
                     self.makeMove(king, 0, 6)
                     rook.movePiece(0, 5)
                     self.pieces[0][7] = None
@@ -223,6 +224,7 @@ class Game:
                         if(king.isInCheck(self.pieces)):
                             king.movePiece(0, 4)
                             return False
+                    king.movePiece(0, 2)
                     self.makeMove(king, 0, 2)
                     rook.movePiece(0, 3)
                     self.pieces[0][0] = None
@@ -243,6 +245,7 @@ class Game:
                         if(king.isInCheck(self.pieces)):
                             king.movePiece(7, 4)
                             return False
+                    king.movePiece(7, 6)
                     self.makeMove(king, 7, 6)
                     rook.movePiece(7, 5)
                     self.pieces[7][7] = None
@@ -263,6 +266,7 @@ class Game:
                         if(king.isInCheck(self.pieces)):
                             king.movePiece(7, 4)
                             return False
+                    king.movePiece(7, 2)
                     self.makeMove(king, 7, 2)
                     rook.movePiece(7, 3)
                     self.pieces[7][0] = None
